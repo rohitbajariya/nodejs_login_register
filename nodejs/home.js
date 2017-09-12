@@ -6,8 +6,6 @@ var session = require('express-session')
 var sha1 = require('sha1');
 require(__dirname + '/db.js');
 
-
-
 var app =express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -21,7 +19,12 @@ app.get('/',function(req, res){
 });
 
 app.get('/registration',function(req,res){    
-    res.render(__dirname + '/registration.html');
+
+	if(check_user_is_login(req, res)==0){
+	    res.render(__dirname + '/registration.html');
+    } else{
+    	res.render(__dirname + '/dashboad.html');
+    } 	    
 });
 
 return_data=[];
@@ -56,16 +59,23 @@ var check_user_is_exit= function(email_id, callback){
     });    
 }
 
-app.get('/dashboad',function(req,res){	
- 	session_data=req.session;   
- 	return_data['session_data']=session_data;
-	if(typeof session_data.email_id !== "undefined"){    
-        res.render(__dirname + '/dashboad.html',return_data);
-	}else{
-		res.redirect('/login');
+    function check_user_is_login(req,res){
+		session_data=req.session;   
+	 	return_data['session_data']=session_data;
+		if(typeof session_data.email_id == "undefined"){    	       
+	        return 0;
+		}else{
+			return 1;
+		}
 	}
-});
 
+	app.get('/dashboad',function(req,res){
+		if(check_user_is_login(req, res)==0){
+	    	res.redirect('/login');
+	    } else{
+	    	res.render(__dirname + '/dashboad.html');
+	    } 	
+	});
 
 app.post('/user_registration',function(req,res){
 	    var first_name=req.body.first_name;
@@ -107,32 +117,30 @@ app.post('/user_registration',function(req,res){
 	});
 });
 
-
-app.get('/logout',function(req, res){
+app.get('/logout',function(req, res){	
 	req.session.destroy();
-	res.redirect('/dashboad');
+	res.redirect('/login');
 });
 
 app.post('/user_login',function(req, res){
+
      $username=req.body.username;     
      $password=req.body.password;
+     $password=sha1($password);
 
      if($username!="" && $password!=""){
 	    var query="SELECT * from test4 WHERE email_id = ? AND password = ?";
 
-	    connection.query(query,[$username,$password],function(err,data){
-	    	res.send(data);
+	    connection.query(query,[$username,$password],function(err,user_data){         
 
-		   //  	if(user_return.length > 0){ 
-		   //      	return_data['regis_status']='error';
-					// return_data['message']='user is already exists!';  		    		
-		   //  		$ret=1;
-		   //  		//callback($ret);
-		   //  	}else{    		
-		   //  		$ret=0;
-		   //  	//	callback($ret);
-		   //  	}     
-	       	 	 
+	    	if(user_data.length==1){
+	    	    req.session['email_id']=user_data[0].email_id;
+	    		res.redirect('/dashboad');	    		
+	    	}else{
+	    		return_data['login_status']='error';
+	    	    return_data['message']='Please provide valid data!';
+	    		res.render(__dirname + '/login.html',return_data);	    		
+	    	}	 
     	});
 	}else{
 		return_data['login_status']='error';
@@ -142,27 +150,11 @@ app.post('/user_login',function(req, res){
 	}
 });
 
-function check_user_is_login(req){
-	session_data=req.session;   
- 	return_data['session_data']=session_data;
-	if(typeof session_data.email_id !== "undefined"){    
-       return 1;
-	}else{
-		return 0;
-	}
-
-}
-app.get('/login',function(req, res){	
-
- $login_check= check_user_is_login(req);
-
-    session_data=req.session;       
- 	return_data['session_data']=session_data;
-
-    if($login_check){    
-        res.render(__dirname + '/dashboad.html',return_data);
-	}else{
-		res.render(__dirname + '/login.html');
-	}  	
+app.get('/login',function(req, res){
+    if(check_user_is_login(req, res)==0){
+    	res.render(__dirname +'/login.html');
+    } else{
+    	res.redirect(__dirname +'/dashboad');	
+    }     
 });
 app.listen(8080);

@@ -1,7 +1,12 @@
 <% include header.html%>    
 <div class="row">
-	<div class="col-sm-4 col-sm-offset-4">
-	   user home
+	<div class="col-sm-12 text-center">
+	   <h1>User Dashboard</h1> <br>
+		<h3><%=session_data.email_id %></h3>
+	</div>
+	<div class="col-sm-4 col-sm-offset-4 text-center">
+	
+	    <a href="/logout">Logout</a>
 	</div>
 </div>	
 <% include footer.html%>
