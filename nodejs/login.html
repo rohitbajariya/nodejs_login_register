@@ -1,0 +1,19 @@
+<% include header.html%>    
+<div class="row">
+	<div class="col-sm-4 col-sm-offset-4">
+	<br/>
+	   <div style="text-align: center; font-size: 20px; border-bottom: 1px solid #000;">User Login</div>
+	<br/>
+		<form action="/user_login" method="post"> 		
+			Enter username <input class="form-control" type="text" name="username"></br>
+			Enter password <input  class="form-control" type="password" name="password"></br>
+		    <input type="submit" value="Login" class="btn btn-success display-inline" >
+		    <a href="/registration" class="btn btn-success display-inline">Registration</a>
+		</form>
+
+		<div>			
+			<% if(typeof(login_status) !=='undefined'){ %><%=message %><% } %>
+		</div>
+	</div>
+</div>	
+<% include footer.html%>
