@@ -1,0 +1,27 @@
+<% include header.html%>
+		<div class="row">
+		   <div class="col-sm-4 col-sm-offset-4">
+
+           <% if(typeof(session_data) !=='undefined' && typeof(session_data.email_id) !=='undefined'){ %><%=session_data.email_id %><% } %>
+		   
+		   <br/>
+		   <div style="text-align: center; font-size: 20px; border-bottom: 1px solid #000;">User Registration</div>
+		   <br/>
+				<form action="user_registration" method="POST">
+					<input type="text" class="form-control" placeholder="First name" name="first_name" value="<% if(typeof(first_name) !=='undefined'){ %><%=first_name %><% } %>">
+					<br/>
+					<input type="text" class="form-control" placeholder="First last" value="<% if(typeof(first_last) !=='undefined'){ %><%=first_last %><% } %>" name="first_last"><br/>
+
+					<input type="text" class="form-control" placeholder="Email address" value="<% if(typeof(email_id) !=='undefined'){ %><%=email_id %><% } %>" name="email_id"><br/>
+
+					<input type="password" class="form-control" placeholder="Password"  value="<% if(typeof(password) !=='undefined'){ %><%=password %><% } %>" name="password"><br/>
+
+					<input type="submit" value="Ok" class="btn btn-success display-inline">
+					<a href="/login" class="btn btn-success display-inline">Login</a>
+				</form>	
+           </div>
+		</div>
+		<div class="col-sm-12 text-center">
+			<% if(typeof(regis_status) !=='undefined'){ %><%=message %><% } %>
+		</div>
+<% include footer.html%>
